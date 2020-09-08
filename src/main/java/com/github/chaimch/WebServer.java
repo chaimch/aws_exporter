@@ -1,4 +1,4 @@
-package io.prometheus.cloudwatch;
+package com.github.chaimch;
 
 import java.io.FileReader;
 

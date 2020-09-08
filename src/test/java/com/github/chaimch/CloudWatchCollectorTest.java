@@ -1,4 +1,4 @@
-package io.prometheus.cloudwatch;
+package com.github.chaimch;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;

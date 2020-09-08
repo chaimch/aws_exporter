@@ -1,4 +1,4 @@
-package io.prometheus.cloudwatch;
+package com.github.chaimch;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

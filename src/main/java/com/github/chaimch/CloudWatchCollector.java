@@ -1,4 +1,4 @@
-package io.prometheus.cloudwatch;
+package com.github.chaimch;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;

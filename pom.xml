@@ -10,12 +10,14 @@
   </description>
   <url>http://github.com/chaimch/aws_exporter</url>
 
+  <!--中央 mvn 仓库的父依赖-->
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
 
+  <!--分发管理仓库-->
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -27,6 +29,7 @@
     </repository>
   </distributionManagement>
 
+  <!--证书-->
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -35,6 +38,7 @@
     </license>
   </licenses>
 
+  <!--代码仓库-->
   <scm>
     <connection>scm:git:git@github.com:chaimch/aws_exporter.git</connection>
     <developerConnection>scm:git:git@github.com:chaimch/aws_exporter.git</developerConnection>
@@ -109,22 +113,35 @@
 
   <build>
     <plugins>
+      <!-- 打包时跳过测试 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+
+      <!--mvn 编译插件-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>11</source>
+          <target>11</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-      <!-- Build a full jar with dependencies -->
+
+      <!-- 依赖打包插件 -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <archive>
             <manifest>
-              <mainClass>io.prometheus.cloudwatch.WebServer</mainClass>
+              <mainClass>com.github.chaimch.WebServer</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -141,6 +158,8 @@
           </execution>
         </executions>
       </plugin>
+
+      <!--发布插件, 自动打 tag-->
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
@@ -152,17 +171,23 @@
           <goals>deploy</goals>
         </configuration>
       </plugin>
+
+      <!--部署插件, 将 jar 部署到远端库 -->
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
         <version>2.7</version>
       </plugin>
+
+      <!--生成 bundle-->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.4.0</version>
         <extensions>true</extensions>
       </plugin>
+
+      <!--执行单元测试并生成报告-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -171,6 +196,7 @@
           <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
