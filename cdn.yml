@@ -1,8 +1,8 @@
 ---
 region: us-east-1
 range_seconds: 120
-delay_seconds: 0
-period_seconds: 1
+delay_seconds: 120
+period_seconds: 60
 
 metrics:
   # For CloudFront metrics, you have to set the region to us-east-1
@@ -10,40 +10,38 @@ metrics:
     aws_metric_name: Requests
     aws_statistics: [Sum]
     aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
 
-  - aws_namespace: AWS/CloudFront
-    aws_metric_name: BytesDownloaded
-    aws_statistics: [Sum]
-    aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
-
-  - aws_namespace: AWS/CloudFront
-    aws_metric_name: 4xxErrorRate
-    aws_statistics: [Average]
-    aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
-
-  - aws_namespace: AWS/CloudFront
-    aws_metric_name: 5xxErrorRate
-    aws_statistics: [Average]
-    aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
-
-  - aws_namespace: AWS/CloudFront
-    aws_metric_name: BytesUploaded
-    aws_statistics: [Sum]
-    aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
-
-  - aws_namespace: AWS/CloudFront
-    aws_metric_name: TotalErrorRate
-    aws_statistics: [Average]
-    aws_dimensions: [DistributionId, Region]
-    aws_dimension_select:
-      Region: [Global]
+#  - aws_namespace: AWS/CloudFront
+#    aws_metric_name: BytesDownloaded
+#    aws_statistics: [Sum]
+#    aws_dimensions: [DistributionId, Region]
+#    aws_dimension_select:
+#      Region: [Global]
+#
+#  - aws_namespace: AWS/CloudFront
+#    aws_metric_name: 4xxErrorRate
+#    aws_statistics: [Average]
+#    aws_dimensions: [DistributionId, Region]
+#    aws_dimension_select:
+#      Region: [Global]
+#
+#  - aws_namespace: AWS/CloudFront
+#    aws_metric_name: 5xxErrorRate
+#    aws_statistics: [Average]
+#    aws_dimensions: [DistributionId, Region]
+#    aws_dimension_select:
+#      Region: [Global]
+#
+#  - aws_namespace: AWS/CloudFront
+#    aws_metric_name: BytesUploaded
+#    aws_statistics: [Sum]
+#    aws_dimensions: [DistributionId, Region]
+#    aws_dimension_select:
+#      Region: [Global]
+#
+#  - aws_namespace: AWS/CloudFront
+#    aws_metric_name: TotalErrorRate
+#    aws_statistics: [Average]
+#    aws_dimensions: [DistributionId, Region]
+#    aws_dimension_select:
+#      Region: [Global]

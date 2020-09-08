@@ -579,11 +579,20 @@ public class CloudWatchCollector extends Collector implements Describable {
         labelValues.add(jobName);
         labelNames.add("instance");
         labelValues.add("");
-        labelNames.add("host");
-        labelValues.add("chaimch.com");
         for (Dimension d : dimensions) {
-          labelNames.add(safeLabelName(toSnakeCase(d.getName())));
-          labelValues.add(d.getValue());
+          String key = safeLabelName(toSnakeCase(d.getName()));
+          String val = d.getValue();
+
+          labelNames.add(key);
+          labelValues.add(val);
+
+          Map<String, String> hosts = new HashMap<String, String>();
+          hosts.put("E2HO8W3TGYTHDQ", "chaimch.com");
+          if (key.equals("distribution_id")) {
+            labelNames.add("host");
+            labelValues.add(hosts.getOrDefault(val, ""));
+
+          }
         }
 
         Long timestamp = null;
