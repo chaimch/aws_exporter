@@ -1,8 +1,8 @@
 ---
 region: us-east-1
 range_seconds: 120
-delay_seconds: 120
-period_seconds: 60
+delay_seconds: 0
+period_seconds: 1
 
 metrics:
   # For CloudFront metrics, you have to set the region to us-east-1
