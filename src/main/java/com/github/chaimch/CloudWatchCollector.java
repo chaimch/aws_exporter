@@ -46,6 +46,7 @@ public class CloudWatchCollector extends Collector implements Describable {
   private static final Logger LOGGER = Logger.getLogger(CloudWatchCollector.class.getName());
 
   static class ActiveConfig implements Cloneable {
+    HashMap<String, Object> hosts;
     ArrayList<MetricRule> rules;
     AmazonCloudWatch cloudWatchClient;
     AWSResourceGroupsTaggingAPI taggingClient;
@@ -97,6 +98,10 @@ public class CloudWatchCollector extends Collector implements Describable {
     loadConfig(in, null, null);
   }
 
+  public CloudWatchCollector(Reader in, Reader hostIn) throws IOException {
+    loadConfig(in, hostIn, null, null);
+  }
+
   public CloudWatchCollector(String yamlConfig) {
     this((Map<String, Object>) new Yaml().load(yamlConfig), null, null);
   }
@@ -118,14 +123,22 @@ public class CloudWatchCollector extends Collector implements Describable {
   protected void reloadConfig() throws IOException {
     LOGGER.log(Level.INFO, "Reloading configuration");
     FileReader reader = null;
+    FileReader hostReader = null;
     try {
       reader = new FileReader(WebServer.configFilePath);
-      loadConfig(reader, activeConfig.cloudWatchClient, activeConfig.taggingClient);
+      if (WebServer.hostFilePath != null){
+        hostReader = new FileReader(WebServer.hostFilePath);
+        loadConfig(reader, hostReader, activeConfig.cloudWatchClient, activeConfig.taggingClient);
+      }else {
+        loadConfig(reader, activeConfig.cloudWatchClient, activeConfig.taggingClient);
+      }
     } finally {
       if (reader != null) {
         reader.close();
       }
-
+      if (hostReader != null){
+        hostReader.close();
+      }
     }
   }
 
@@ -133,9 +146,17 @@ public class CloudWatchCollector extends Collector implements Describable {
     loadConfig((Map<String, Object>) new Yaml().load(in), cloudWatchClient, taggingClient);
   }
 
-  private void loadConfig(Map<String, Object> config, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) {
+  protected void loadConfig(Reader in, Reader hostIn, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) throws IOException {
+    loadConfig((Map<String, Object>) new Yaml().load(in), (Map<String, Object>) new Yaml().load(hostIn), cloudWatchClient, taggingClient);
+  }
+
+  private void loadConfig(Map<String, Object> config, Map<String, Object> hostConfig, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) {
     if (config == null) {  // Yaml config empty, set config to empty map.
       config = new HashMap<String, Object>();
+    }
+
+    if (hostConfig == null) {
+      hostConfig = new HashMap<String, Object>();
     }
 
     int defaultPeriod = 60;
@@ -260,15 +281,24 @@ public class CloudWatchCollector extends Collector implements Describable {
       }
     }
 
-    loadConfig(rules, cloudWatchClient, taggingClient);
+    loadConfig(rules, cloudWatchClient, taggingClient, (HashMap<String, Object>) hostConfig);
   }
 
-  private void loadConfig(ArrayList<MetricRule> rules, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) {
+  private void loadConfig(Map<String, Object> config, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) {
+    this.loadConfig(config, null, cloudWatchClient, taggingClient);
+  }
+
+  private void loadConfig(ArrayList<MetricRule> rules, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient, HashMap<String, Object> hostConfig) {
     synchronized (activeConfig) {
       activeConfig.cloudWatchClient = cloudWatchClient;
       activeConfig.taggingClient = taggingClient;
       activeConfig.rules = rules;
+      activeConfig.hosts = hostConfig;
     }
+  }
+
+  private void loadConfig(ArrayList<MetricRule> rules, AmazonCloudWatch cloudWatchClient, AWSResourceGroupsTaggingAPI taggingClient) {
+    this.loadConfig(rules, cloudWatchClient, taggingClient, null);
   }
 
   private AWSCredentialsProvider getRoleCredentialProvider(Map<String, Object> config) {
@@ -586,11 +616,9 @@ public class CloudWatchCollector extends Collector implements Describable {
           labelNames.add(key);
           labelValues.add(val);
 
-          Map<String, String> hosts = new HashMap<String, String>();
-          hosts.put("E2HO8W3TGYTHDQ", "chaimch.com");
           if (key.equals("distribution_id")) {
             labelNames.add("host");
-            labelValues.add(hosts.getOrDefault(val, ""));
+            labelValues.add((String) activeConfig.hosts.getOrDefault(val, ""));
 
           }
         }
