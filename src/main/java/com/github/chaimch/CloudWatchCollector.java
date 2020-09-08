@@ -616,7 +616,7 @@ public class CloudWatchCollector extends Collector implements Describable {
           labelNames.add(key);
           labelValues.add(val);
 
-          if (key.equals("distribution_id")) {
+          if (!activeConfig.hosts.isEmpty() && key.equals("distribution_id")) {
             labelNames.add("host");
             labelValues.add((String) activeConfig.hosts.getOrDefault(val, ""));
 

@@ -13,4 +13,4 @@ WORKDIR /
 RUN mkdir /config
 COPY --from=builder /aws_exporter.jar /aws_exporter.jar
 ENTRYPOINT [ "java", "-jar", "/aws_exporter.jar", "9106"]
-CMD ["/config/config.yml"]
+CMD ["/config/config.yml", "/config/hosts.yml"]
